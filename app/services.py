@@ -6,7 +6,7 @@ from sqlalchemy import select
 from asyncpg.exceptions import UniqueViolationError
 
 
-import models, schemas
+from app import models, schemas
 
 
 async def add_item(
@@ -88,42 +88,19 @@ async def delete_item(
 
 async def search_item(
     session: AsyncSession,
-    title: str | None = None,
-    author: str | None = None,
-    price_min: float | None = None,
-    price_max: float | None = None
-) -> list[models.Ad]:
-    """
-    Поиск объявлений по фильтрам.
-    """
-    query = select(models.Ad)
-    
-    if title:
-        query = query.where(models.Ad.title.ilike(f"%{title}%"))
-    if author:
-        query = query.where(models.Ad.author.ilike(f"%{author}%"))
-    if price_min is not None:
-        query = query.where(models.Ad.price >= price_min)
-    if price_max is not None:
-        query = query.where(models.Ad.price <= price_max)
-    
-    result = await session.execute(query)
-    return result.scalars().all()
-
-
-async def search_item(
-    session: AsyncSession,
     orm_model: type[models.Ad],
     title: str | None = None,
     author: str | None = None,
     price_min: float | None = None,
-    price_max: float | None = None
+    price_max: float | None = None,
+    limit: int = 100,
+    offset: int = 0
 ) -> list[models.Ad]:
     """
     Поиск объявлений по фильтрам.
     """
     query = select(orm_model)
-
+    
     if title:
         query = query.where(orm_model.title.ilike(f"%{title}%"))
     if author:
@@ -133,5 +110,7 @@ async def search_item(
     if price_max is not None:
         query = query.where(orm_model.price <= price_max)
 
+    query = query.offset(offset).limit(limit)
+    
     result = await session.execute(query)
     return result.scalars().all()

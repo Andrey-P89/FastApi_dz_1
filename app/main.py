@@ -1,16 +1,16 @@
-# app/app.py
+# app/main.py
 
 from fastapi import FastAPI, Depends
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from lifespan import lifespan
-from database import AsyncSessionLocal
-import models, schemas
+from app.lifespan import lifespan
+from app.database import AsyncSessionLocal
+from app import models, schemas
 
-from dependencies import get_db_session
+from app.dependencies import get_db_session
 
-from services import add_item, get_item, update_item, delete_item, search_item
+from app.services import add_item, get_item, update_item, delete_item, search_item
 
 app = FastAPI(
     title="Advertisement App",
@@ -64,7 +64,7 @@ async def update_ad(
 
 @app.delete(
     "/v1/ad/{item_id}", 
-    response_model=schemas.OKResponse, 
+    status_code=204, 
     summary="Удалить объявление"
 )
 async def delete_ad(
@@ -72,7 +72,6 @@ async def delete_ad(
     session: SessionDep
     ):
     await delete_item(session, models.Ad, item_id)
-    return schemas.OKResponse()
 
 
 @app.get("/v1/ad",
@@ -85,6 +84,8 @@ async def search_ads(
     author: str | None = None,
     price_min: float | None = None,
     price_max: float | None = None,
+    limit: int = 100,
+    offset: int = 0,
     ):
     ads = await search_item(
         session,
@@ -92,6 +93,8 @@ async def search_ads(
         title,
         author,
         price_min,
-        price_max
+        price_max,
+        limit,
+        offset
     )
     return [schemas.GetAdResponse(**ad.to_dict()) for ad in ads]

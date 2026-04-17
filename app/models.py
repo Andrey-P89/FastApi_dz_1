@@ -1,6 +1,6 @@
 # app/models.py
 from sqlalchemy import Column, Integer, String, Text, Numeric, DateTime, func
-from database import Base
+from app.database import Base
 
 class Ad(Base):
     __tablename__ = "ads"

@@ -1,6 +1,6 @@
 # app/schemas.py
 from decimal import Decimal
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional
 
 
@@ -9,6 +9,12 @@ class CreateAdRequest(BaseModel):
     description: str | None = None
     price: Decimal
     author: str
+
+    @field_validator('price')
+    def price_positive(cls, v):
+        if v <= 0:
+            raise ValueError('Price must be greater than 0')
+        return v
 
 
 class CreateAdResponse(BaseModel):
