@@ -18,6 +18,18 @@ docker-compose down
 ## Настройки
 Переименуйте `.env.example` в `.env` и при необходимости измените параметры.
 
+## Переменные окружения
+
+Файл `.env` должен содержать:
+
+```env
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=advertisement_db
+POSTGRES_HOST=db      # для Docker; для локального запуска замените на localhost
+POSTGRES_PORT=5432
+```
+
 ## Примеры запросов
 
 ```bash

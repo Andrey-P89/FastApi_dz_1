@@ -35,6 +35,12 @@ class UpdateAdRequest(BaseModel):
     description: Optional[str] = None
     price: Optional[Decimal] = None
 
+    @field_validator('price')
+    def price_positive(cls, v):
+        if v is not None and v <= 0:
+            raise ValueError('Price must be greater than 0')
+        return v
+
 
 class UpdateAdResponse(BaseModel):
     id: int
@@ -43,7 +49,3 @@ class UpdateAdResponse(BaseModel):
     price: Decimal
     author: str
     created_at: str
-
-
-class OKResponse(BaseModel):
-    status: str = "ok"
