@@ -1,35 +1,69 @@
 # FastAPI API для объявлений
 
-## Запуск
+REST API сервис для объявлений купли/продажи.
+
+## Переменные окружения
+
+Создайте файл `.env` на основе `.env.example`:
 
 ```bash
-# 1. Запустить БД и приложение
-docker-compose up --build -d
-
-# 2. Проверить работу
-# Открыть в браузере http://localhost:8080/docs
+cp .env.example .env
 ```
-## Остановка
-
-```bash
-docker-compose down
-```
-
-## Настройки
-Переименуйте `.env.example` в `.env` и при необходимости измените параметры.
-
 ## Переменные окружения
 
 Файл `.env` должен содержать:
 
 ```env
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=advertisement_db
-POSTGRES_HOST=db      # для Docker; для локального запуска замените на localhost
-POSTGRES_PORT=5432
+POSTGRES_USER=postgres          # Имя пользователя БД
+POSTGRES_PASSWORD=postgres      # Пароль БД
+POSTGRES_DB=advertisement_db    # Название БД
+POSTGRES_HOST=db                # для Docker; для локального запуска замените на localhost
+POSTGRES_PORT=5432              # Порт БД
+```
+# Запуск
+## Через Docker (рекомендуется)
+
+1. Скопировать настройки окружения
+```bash
+cp .env.example .env
 ```
 
+2. Запустить контейнеры
+```bash
+docker-compose up --build -d
+```
+3. Проверить работу
+```bash
+# Открыть в браузере http://localhost:8080/docs
+```
+## Локальный запуск (с PostgreSQL на хосте)
+
+**Требования:**
+- Python 3.11+
+- PostgreSQL установлен и запущен
+
+**Шаги:**
+
+```bash
+# 1. Скопировать настройки окружения
+cp .env.example .env
+
+# 2. Отредактировать .env (указать данные своей БД)
+POSTGRES_HOST=localhost
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=твой_пароль
+POSTGRES_DB=advertisement_db
+POSTGRES_PORT=5432
+
+# 3. Создать базу данных
+psql -U postgres -c "CREATE DATABASE advertisement_db;"
+
+# 4. Установить зависимости
+pip install -r requirements.txt
+
+# 5. Запустить приложение
+uvicorn app.main:app --reload --port 8080
+```
 ## Примеры запросов
 
 ```bash
